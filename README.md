@@ -1,66 +1,139 @@
-Overview of the Project 	
+# Smart Library Management System (SLMS)
 
-The Smart Library Management System (SLMS) is a Java-based application developed to digitalize and automate traditional library processes. It is designed to support multiple roles—Admin, Librarian, and Student—with each role having specific permissions and access. The system handles various core functions such as book inventory management, issuing/returning books, fine calculation, and reporting. By replacing paper-based or semi-digital systems, SLMS significantly reduces human error, increases operational speed, and improves the overall efficiency of library management.
+A robust, multi-tier enterprise desktop application developed in Java Swing and MySQL, featuring Role-Based Access Control (RBAC), Data Access Object (DAO) architecture, and full transactional book borrowing lifecycle management.
 
-OOP Concepts Used:
+[![Java](https://img.shields.io/badge/Java-8%2B-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://www.java.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Architecture](https://img.shields.io/badge/Architecture-DAO_Pattern-blue?style=flat)](#-system-architecture)
+[![GUI](https://img.shields.io/badge/GUI-Java_Swing-orange?style=flat)](#-role-based-features)
 
-Object-Oriented Programming (OOP) is a key principle used in designing the Smart Library Management System. The system utilizes the four pillars of OOP—Encapsulation, Inheritance, Polymorphism, and Abstraction—to build a modular, reusable, and maintainable codebase.
+---
 
-1. Class and Object
-The project is structured using classes to represent real-world entities like:
+## 📌 Overview
 
-•
-Book
+The **Smart Library Management System** digitalizes institutional library operations by replacing manual paper workflows with an audited, database-backed management system. The platform strictly enforces permission boundaries across three distinct user roles—**Administrator**, **Librarian**, and **Student**—and coordinates book inventory, hold requests, fine calculations, and member notifications.
 
-•
-User
+---
 
-•
-Librarian
+## 🏗️ System Architecture
 
-•
-Student
+The application is structured following enterprise software design principles, enforcing a clear separation of concerns across three primary tiers:
 
-•
-Transaction
+```
+┌────────────────────────────────────────────────────────┐
+│                   Presentation Layer                   │
+│  (Java Swing: LoginFrame, Admin/Librarian/Student UI)  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                Data Access Layer (DAO)                 │
+│  (BookDAO, IssuedBookDAO, FineDAO, UserDAO, StudentDAO) │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                   Persistence Layer                    │
+│        (MySQL Database via JDBC & DBUtil pool)         │
+└────────────────────────────────────────────────────────┘
+```
 
-Each class encapsulates data (fields) and behaviors (methods) that reflect their real-world functionality. For example, the Book class contains fields such as title, author, and availabilityStatus, and methods like issueBook() and returnBook().
+### 1. Data Access Object (DAO) Pattern
+All database queries are encapsulated inside dedicated DAO classes (`BookDAO`, `IssuedBookDAO`, `FineDAO`, `LibrarianDAO`, `NotificationDAO`, `StudentDAO`, `UserDAO`). This prevents SQL query leakage into UI listeners and ensures that database transactions remain clean, maintainable, and testable.
 
-Objects are instances of these classes, dynamically created during runtime to handle operations like issuing a book to a student or updating book details.
+### 2. Domain Model Encapsulation
+Domain entities (`Book`, `User`, `Student`, `Librarian`, `Fine`, `IssuedBook`, `BookRequest`, `Notification`) use strict OOP encapsulation with private state variables and strongly-typed getters and setters.
 
-2. Inheritance
-Inheritance allows code reuse by creating a hierarchy of classes. In the system:
+---
 
-•
-A general User class is created as a parent (superclass).
+## ✨ Role-Based Features
 
-•
-Student and Librarian classes are child (subclasses) that inherit from User.
-This allows shared attributes (e.g., userID, name, email) and behaviors (e.g., login(), logout()) to be defined in the User class, and specialized functionalities (e.g., issueBook() for librarian, viewIssuedBooks() for student) to be defined in subclasses.
+### 👑 Administrator Portal
+- **Librarian Management:** Create, update, and manage librarian accounts and system permissions.
+- **User Directory:** Audit all active student and staff accounts.
+- **Financial & Fine Reports:** Review collected overdue fees and outstanding library penalties.
+- **System Metrics:** Real-time summary of total inventory, active circulations, and system activity.
 
-4. Encapsulation
-Encapsulation is achieved by:
+### 📚 Librarian Portal
+- **Catalog Management:** Add new acquisitions, update metadata, edit stock levels, and remove archived books.
+- **Issue & Return Processing:** Transactionally check out books to students and process returns.
+- **Overdue Detection:** Visual table indicators (`OverdueCellRenderer`) highlighting loans past the due date.
+- **Student Record Audits:** Review student borrowing history and track outstanding balances.
 
-•
-Declaring fields (variables) as private.
+### 🎓 Student Portal
+- **Catalog Search:** Browse available books and verify immediate availability.
+- **Active Loans & Status:** Inspect current borrow dates, due dates, and return status.
+- **Hold & Reservation:** Submit hold requests for currently checked-out volumes.
+- **Reissue Requests:** Request loan extensions directly from the dashboard.
+- **Notifications & Fines:** View system alerts and track any incurred fines.
 
-•
-Providing access through public getters and setters.
+---
 
-5. Polymorphism
-Polymorphism is used to allow objects to behave differently based on their type. It is implemented through method overriding.
+## 🛠️ Database Schema (`library_db.sql`)
 
-Example:
+The underlying MySQL schema enforces relational integrity across core tables:
+- `users`: Core credentials and role categorization (`ADMIN`, `LIBRARIAN`, `STUDENT`).
+- `students`: Academic profiles linked to base user credentials.
+- `librarians`: Staff operational profiles.
+- `books`: Title, author, category, ISBN, and quantity tracking.
+- `issued_books`: Active and historical borrowing records with checkout and return timestamps.
+- `fines`: Penalty records tied to specific overdue issues.
+- `book_requests`: Student hold and acquisition requests (`NEW`, `HOLD`, `REISSUE`).
+- `notifications`: Student-specific operational alerts.
 
-•
-The login() method may be defined in the User class.
+---
 
-•
-It is overridden in Librarian and Student classes to validate credentials based on role-specific logic.
-This allows a common interface with customized implementations depending on the user role.
+## 🚀 Installation & Setup
 
-6. Abstraction
-Abstraction hides implementation details and shows only essential features. In this system:
+### Prerequisites
 
-•
-Abstract classes or interfaces are used to define common operations such as manageBooks() or generateReports().
+- **Java Development Kit (JDK):** Version 8 or higher
+- **MySQL Server:** Version 8.0 or higher
+- **MySQL Connector/J:** Included in `LibraryManagementSystem/src/lib/mysql-connector-j-9.3.0.jar`
+
+### 1. Database Initialization
+
+1. Start your local MySQL server.
+2. Import the provided schema:
+   ```bash
+   mysql -u root -p < LibraryManagementSystem/library_db.sql
+   ```
+
+### 2. Configure Database Connection
+
+Open `LibraryManagementSystem/src/util/DBUtil.java` and ensure your database credentials match:
+
+```java
+String url = "jdbc:mysql://localhost:3306/library_db?useSSL=false&serverTimezone=UTC";
+String user = "root";       // Your MySQL username
+String password = "your_password"; // Your MySQL password
+```
+
+### 3. Compilation & Execution
+
+Navigate to the source directory and run:
+
+```bash
+cd LibraryManagementSystem/src
+
+# Compile all source files against the JDBC driver
+javac -cp ".;lib/mysql-connector-j-9.3.0.jar" -d ../bin $(Get-ChildItem -Recurse -Filter *.java | Select-Object -ExpandProperty FullName)
+
+# Launch the Application Login Frame
+java -cp ".;lib/mysql-connector-j-9.3.0.jar" ui.LoginFrame
+```
+
+*(On Linux / macOS bash, use `:` instead of `;` as the classpath delimiter).*
+
+---
+
+## 💡 Software Engineering Principles Demonstrated
+
+- **Encapsulation:** Protects internal entity state while ensuring controlled modification through validation methods.
+- **Inheritance:** `Student` and `Librarian` extend the foundational `User` class, maximizing code reusability across identity and authentication logic.
+- **Polymorphism:** Method overriding enables specialized login behaviors and permission checks depending on runtime role resolution.
+- **Separation of Concerns:** Zero UI code inside DAOs and zero SQL queries inside Swing event listeners.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
