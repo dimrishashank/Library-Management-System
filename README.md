@@ -17,25 +17,11 @@ The **Smart Library Management System** digitalizes institutional library operat
 
 ## 🏗️ System Architecture
 
-The application is structured following enterprise software design principles, enforcing a clear separation of concerns across three primary tiers:
+<p align="center">
+  <img src="assets/graphics/system-architecture.svg" alt="Smart Library Management System 3-Tier DAO Architecture" width="100%"/>
+</p>
 
-```
-┌────────────────────────────────────────────────────────┐
-│                   Presentation Layer                   │
-│  (Java Swing: LoginFrame, Admin/Librarian/Student UI)  │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│                Data Access Layer (DAO)                 │
-│  (BookDAO, IssuedBookDAO, FineDAO, UserDAO, StudentDAO) │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│                   Persistence Layer                    │
-│        (MySQL Database via JDBC & DBUtil pool)         │
-└────────────────────────────────────────────────────────┘
-```
-
+The application enforces strict separation of concerns across three distinct enterprise architectural tiers:
 ### 1. Data Access Object (DAO) Pattern
 All database queries are encapsulated inside dedicated DAO classes (`BookDAO`, `IssuedBookDAO`, `FineDAO`, `LibrarianDAO`, `NotificationDAO`, `StudentDAO`, `UserDAO`). This prevents SQL query leakage into UI listeners and ensures that database transactions remain clean, maintainable, and testable.
 
